@@ -2,11 +2,13 @@
     <string name="app_name">Date and Time Pickers</string>
     <string name="txt_time">HORA no formato hh:mm:ss</string>
     <string name="txt_date">DATA no formato dd/mm/aaaa</string>
-    <string name="txt_validate_form">Validar entrada</string>
+    <string name="txt_validate_form">Validar entradas</string>
     <string name="error_no_date">ERRO: A data precisa ser declarada!</string>
     <string name="error_no_time">ERRO: a hora precisa ser declarada!</string>
     <string name="error_invalid_date_pattern">ERRO: data com formato inválido!</string>
     <string name="error_invalid_time_pattern">ERRO: hora com formato inválido!</string>
     <string name="error_invalid_day_of_month">ERRO: este mês tem apenas %d dias.</string>
     <string name="error_no_leap_year">ERRO: o ano %d não é bissexto!</string>
+    <string name="txt_pick_date">Pick Date</string>
+    <string name="txt_pick_time">Pick Time</string>
 </resources>

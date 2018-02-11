@@ -1,5 +1,7 @@
 package br.com.conseng.dateandtimepickers
 
+import android.app.DatePickerDialog
+import android.app.TimePickerDialog
 import android.os.Bundle
 import android.support.design.widget.TextInputLayout
 import android.support.v7.app.AppCompatActivity
@@ -12,6 +14,10 @@ import java.text.SimpleDateFormat
 import java.util.*
 import java.util.regex.Pattern
 
+/**
+ * Exemplo da funcionalida de janela de diálogo para obter data e hora do androide.
+ * @see [https://developer.android.com/guide/topics/ui/controls/pickers.html]
+ */
 class MainActivity : AppCompatActivity() {
 
     private lateinit var editTextDate: AppCompatEditText
@@ -57,20 +63,19 @@ class MainActivity : AppCompatActivity() {
     /**
      * Valida o formato e o valor da data definida na entrada [textLayoutDate].
      * Se inválida, atualiza a mensagem de erro em [textLayoutDate].
+     * @param [showError] indica se deve mostrar a mensagem de erro (true) ou não.
      * @return se a data for inválida, retorna null.
      *         se a data for válida, retorna com a nova data.
      */
-    private fun validateDate(): Calendar? {
+    private fun validateDate(showError: Boolean = true): Calendar? {
         var date: Calendar? = null
         val datePattern = Pattern.compile("(0[1-9]|[12][0-9]|3[01])/(0[1-9]|1[0-2])/((19|20)[0-9][0-9])")
         val newDate: String = editTextDate.text.toString()
 
         if (newDate.isEmpty()) {
-            textLayoutDate.isErrorEnabled = true
-            textLayoutDate.error = getString(R.string.error_no_date)
+            showErrorMessage(showError, textLayoutDate, R.string.error_no_date)
         } else if (!datePattern.matcher(newDate).matches()) {
-            textLayoutDate.isErrorEnabled = true
-            textLayoutDate.error = getString(R.string.error_invalid_date_pattern)
+            showErrorMessage(showError, textLayoutDate, R.string.error_invalid_date_pattern)
         } else {
             var day: Int = 0
             var month: Int = 0
@@ -93,13 +98,11 @@ class MainActivity : AppCompatActivity() {
             }
 
             if (day > monthLimit[month - 1]) {
-                textLayoutDate.isErrorEnabled = true
-                textLayoutDate.error = getString(R.string.error_invalid_day_of_month).format(monthLimit[month - 1])
+                showErrorMessage(showError, textLayoutDate, R.string.error_invalid_day_of_month, monthLimit[month - 1])
             } else if ((2 == month) and (29 == day) and !leapYear) {
-                textLayoutDate.isErrorEnabled = true
-                textLayoutDate.error = getString(R.string.error_no_leap_year).format(year)
+                showErrorMessage(showError, textLayoutDate, R.string.error_no_leap_year, year)
             } else {
-                textLayoutDate.isErrorEnabled = false
+                if (showError) textLayoutDate.isErrorEnabled = false
                 date = Calendar.getInstance()
                 // No calendário, Janeiro = 0!
                 date.set(year, month - 1, day)
@@ -112,20 +115,19 @@ class MainActivity : AppCompatActivity() {
     /**
      * Valida o formato e o valor da hora definida na entrada [editTextTime].
      * Se inválida, atualiza a mensagem de erro em [editTextTime].
+     * @param [showError] indica se deve mostrar a mensagem de erro (true) ou não.
      * @return se a hora for inválida, retorna null.
      *         se a hora for válida, retorna com a nova hora.
      */
-    private fun validateTime(): Calendar? {
+    private fun validateTime(showError: Boolean = true): Calendar? {
         var time: Calendar? = null
         val timePattern = Pattern.compile("([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]")
         val newTime: String = editTextTime.text.toString()
 
         if (newTime.isEmpty()) {
-            textLayoutTime.isErrorEnabled = true
-            textLayoutTime.error = getString(R.string.error_no_time)
+            showErrorMessage(showError, textLayoutTime, R.string.error_no_time)
         } else if (!timePattern.matcher(newTime).matches()) {
-            textLayoutTime.isErrorEnabled = true
-            textLayoutTime.error = getString(R.string.error_invalid_time_pattern)
+            showErrorMessage(showError, textLayoutTime, R.string.error_invalid_time_pattern)
         } else {
             var hours: Int = 0
             var minutes: Int = 0
@@ -143,9 +145,56 @@ class MainActivity : AppCompatActivity() {
             time.set(Calendar.MINUTE, minutes)
             time.set(Calendar.SECOND, seconds)
 
-            textLayoutTime.isErrorEnabled = false
+            if (showError) textLayoutTime.isErrorEnabled = false
         }
 
         return time
+    }
+
+    /**
+     * Mostra a mensagem de erro da data no [view] da tela.
+     * @param [showError] indica se deve mostrar a mensagem de erro (true) ou não.
+     * @param [view] campo de leiaute onde a mensagem de erro deve ser apresentada.
+     * @param [msgId] código da string com a mensagem de erro.
+     * @param [args] parâmetros para a formatação da mensagem de erro (se houver)
+     */
+    private fun showErrorMessage(showError: Boolean, view: TextInputLayout, msgId: Int, vararg args: Any?) {
+        if (showError) {
+            view.isErrorEnabled = true
+            view.error = if (null == args) getString(msgId) else getString(msgId).format(args)
+        }
+    }
+
+    /**
+     * Abre uma da janela de diálogo padrão do Androide para definir uma data.
+     */
+    fun onClickPickDate(view: View) {
+        val currentDate = validateDate(false) ?: Calendar.getInstance()
+        val day = currentDate.get(Calendar.DAY_OF_MONTH)
+        val month = currentDate.get(Calendar.MONTH)
+        val year = currentDate.get(Calendar.YEAR)
+        val dpd = DatePickerDialog(this, android.R.style.Theme_Holo_Dialog,
+                DatePickerDialog.OnDateSetListener { view, year, monthOfYear, dayOfMonth ->
+                    // Considera Janeiro = 0, por isso de incrementar o mês!
+                    val newDate = "%02d/%02d/%04d".format(dayOfMonth, monthOfYear + 1, year)
+                    editTextDate.setText(newDate)
+                }, year, month, day)
+        dpd.show()
+    }
+
+    /**
+     * Abre uma da janela de diálogo padrão do Androide para definir uma hora.
+     */
+    fun onClickPickTime(view: View) {
+        val currentTime = validateTime(false) ?: Calendar.getInstance()
+        val hour = currentTime.get(Calendar.HOUR_OF_DAY)
+        val minute = currentTime.get(Calendar.MINUTE)
+//        val second = currentTime.get(Calendar.SECOND)
+        val tpd = TimePickerDialog(this, android.R.style.Theme_Holo_Dialog,
+                TimePickerDialog.OnTimeSetListener { view, hourOfDay, minute ->
+                    val newTime = "%02d:%02d:00".format(hourOfDay, minute)
+                    editTextTime.setText(newTime)
+                }, hour, minute, true)
+        tpd.show()
     }
 }
