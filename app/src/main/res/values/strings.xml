@@ -11,4 +11,5 @@
     <string name="error_no_leap_year">ERRO: o ano %d não é bissexto!</string>
     <string name="txt_pick_date">Pick Date</string>
     <string name="txt_pick_time">Pick Time</string>
+    <string name="txt_last_pick_theme">Mostra o tema utilizado no último PICK</string>
 </resources>

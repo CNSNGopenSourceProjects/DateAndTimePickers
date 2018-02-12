@@ -25,6 +25,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var textLayoutDate: TextInputLayout
     private lateinit var textLayoutTime: TextInputLayout
     private lateinit var textFinalDateTime: TextView
+    private lateinit var textCurrentTheme: TextView
     private lateinit var btnValidate: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,6 +38,7 @@ class MainActivity : AppCompatActivity() {
         textLayoutTime = txtlayout_time
         btnValidate = btn_validate
         textFinalDateTime = txt_new_date_time
+        textCurrentTheme = txt_pick_theme
     }
 
     /**
@@ -166,6 +168,65 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
+     * Lista as várias opções de tema disponíveis para o PICK-DATE.
+     * @see [https://android--code.blogspot.com.br/2015/08/android-timepickerdialog-theme.html]
+     * @see [https://android--code.blogspot.com.br/2015/08/android-datepickerdialog-theme.html]
+     */
+    private val pickThemeOptions = intArrayOf(
+            android.R.style.Theme_DeviceDefault_Dialog_Alert,
+            android.R.style.Theme_DeviceDefault_Light_Dialog_Alert,
+            android.R.style.Theme_Material_Dialog_Alert,
+            android.R.style.Theme_Material_Light_Dialog_Alert,
+            android.R.style.Theme_Material_Dialog_Presentation,
+            android.R.style.Theme_Dialog,
+            android.R.style.Theme_Holo_Dialog,
+            android.R.style.Theme_Holo_Dialog_MinWidth,
+            android.R.style.Theme_Holo_Light_Dialog,
+            android.R.style.Theme_Holo_Light_DialogWhenLarge)
+
+    /**
+     * Lista as várias opções de tema disponíveis para o PICK-DATE para apresentação .
+     * @see [https://android--code.blogspot.com.br/2015/08/android-timepickerdialog-theme.html]
+     * @see [https://android--code.blogspot.com.br/2015/08/android-datepickerdialog-theme.html]
+     */
+    private val datePickThemeOptionsText = arrayListOf(
+            "android.R.style.Theme_DeviceDefault_Dialog_Alert",
+            "android.R.style.Theme_DeviceDefault_Light_Dialog_Alert",
+            "android.R.style.Theme_Material_Dialog_Alert",
+            "android.R.style.Theme_Material_Light_Dialog_Alert",
+            "android.R.style.Theme_Material_Dialog_Presentation",
+            "android.R.style.Theme_Dialog",
+            "android.R.style.Theme_Holo_Dialog",
+            "android.R.style.Theme_Holo_Dialog_MinWidth",
+            "android.R.style.Theme_Holo_Light_Dialog",
+            "android.R.style.Theme_Holo_Light_DialogWhenLarge")
+
+    /**
+     * Aponta para o último tema utilizado.
+     * @see [https://android--code.blogspot.com.br/2015/08/android-timepickerdialog-theme.html]
+     * @see [https://android--code.blogspot.com.br/2015/08/android-datepickerdialog-theme.html]
+     */
+    private var lastPickThemeOption = -1
+
+    /**
+     * Retorna a identificação do próximo tema a ser utilizado no diálogo para data e hora.
+     * Atualiza o [textCurrentTheme] com o nome do tema utilizado.
+     * @param [forDate] indica se o tema será utilizado para o diálogo de data (true) ou de hora (false).
+     * @return código do tema no recurso do antroide.
+     * @see [https://android--code.blogspot.com.br/2015/08/android-timepickerdialog-theme.html]
+     * @see [https://android--code.blogspot.com.br/2015/08/android-datepickerdialog-theme.html]
+     */
+    private fun getNextPickTheme(forDate: Boolean): Int {
+        val who = if (forDate) "DatePicker: " else "TimePicker: "
+        if ((lastPickThemeOption < 0) or (lastPickThemeOption >= datePickThemeOptionsText.size - 1))
+            lastPickThemeOption = 0
+        else
+            lastPickThemeOption++
+        textCurrentTheme.text = who + datePickThemeOptionsText[lastPickThemeOption]
+        return pickThemeOptions[lastPickThemeOption]
+    }
+
+    /**
      * Abre uma da janela de diálogo padrão do Androide para definir uma data.
      */
     fun onClickPickDate(view: View) {
@@ -173,7 +234,7 @@ class MainActivity : AppCompatActivity() {
         val day = currentDate.get(Calendar.DAY_OF_MONTH)
         val month = currentDate.get(Calendar.MONTH)
         val year = currentDate.get(Calendar.YEAR)
-        val dpd = DatePickerDialog(this, android.R.style.Theme_Holo_Dialog,
+        val dpd = DatePickerDialog(this, getNextPickTheme(true),
                 DatePickerDialog.OnDateSetListener { view, year, monthOfYear, dayOfMonth ->
                     // Considera Janeiro = 0, por isso de incrementar o mês!
                     val newDate = "%02d/%02d/%04d".format(dayOfMonth, monthOfYear + 1, year)
@@ -190,7 +251,7 @@ class MainActivity : AppCompatActivity() {
         val hour = currentTime.get(Calendar.HOUR_OF_DAY)
         val minute = currentTime.get(Calendar.MINUTE)
 //        val second = currentTime.get(Calendar.SECOND)
-        val tpd = TimePickerDialog(this, android.R.style.Theme_Holo_Dialog,
+        val tpd = TimePickerDialog(this, getNextPickTheme(false),
                 TimePickerDialog.OnTimeSetListener { view, hourOfDay, minute ->
                     val newTime = "%02d:%02d:00".format(hourOfDay, minute)
                     editTextTime.setText(newTime)

@@ -57,29 +57,39 @@
             android:id="@+id/btn_validate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_margin="8dp"
             android:layout_weight="1"
             android:onClick="validateForm"
-            android:padding="8dp"
             android:text="@string/txt_validate_form" />
 
         <Button
             android:id="@+id/btn_pick_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_margin="8dp"
             android:layout_weight="1"
             android:onClick="onClickPickDate"
-            android:padding="8dp"
             android:text="@string/txt_pick_date" />
 
         <Button
             android:id="@+id/btn_pick_time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_margin="8dp"
             android:layout_weight="1"
             android:onClick="onClickPickTime"
-            android:padding="8dp"
             android:text="@string/txt_pick_time" />
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/txt_pick_theme"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="32dp"
+        android:layout_marginRight="32dp"
+        android:layout_marginTop="32dp"
+        android:text="@string/txt_last_pick_theme"
+        android:textAlignment="center" />
 
     <TextView
         android:id="@+id/txt_new_date_time"
